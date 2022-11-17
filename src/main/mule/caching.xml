@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="3ea6c135-7cea-4719-95d0-14fec2adce4a" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<ee:object-store-caching-strategy name="Caching_Strategy" doc:name="Caching Strategy" doc:id="956609ca-3353-4017-b41a-163699c40dc8" >
+		<os:private-object-store maxEntries="100" entryTtl="5" entryTtlUnit="MINUTES" expirationInterval="2" />
+	</ee:object-store-caching-strategy>
+	<flow name="cachingFlow" doc:id="4293a6f2-6e3b-4128-bb6b-05295f245859" >
+		<http:listener doc:name="Listener" doc:id="a826d9b5-7081-4aff-8d0c-1eaabc5652b6" config-ref="HTTP_Listener_config" path="/Cache"/>
+		<set-payload value="#[attributes.queryParams.accountID]" doc:name="Set Payload" doc:id="e992d4e8-de85-4cb6-8e08-d8246487f43e" />
+		<logger level="INFO" doc:name="Logger" doc:id="d46a03e5-d427-4237-84de-918ca7e8f053" message="payload received----------#[payload]"/>
+		<ee:cache doc:name="Cache" doc:id="3db09645-e041-4194-a768-34fd4cb3a9ba" cachingStrategy-ref="Caching_Strategy">
+			<logger level="INFO" doc:name="Logger" doc:id="8f0c7674-e699-40e0-894f-e09d50f5d134" message="cache starts-------------" />
+			<ee:transform doc:name="Transform Message" doc:id="0132122d-dd5c-404a-aa73-f64d970ad50d" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+[{
+	
+	"accountID":"1001",
+	"Type":"Savings"},
+	{
+	"accountID":"1002",
+	"Type":"Credit"},
+	{
+	"accountID":"1003",
+	"Type":"Salary"
+	
+}]
+]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<logger level="INFO" doc:name="Logger" doc:id="f609d898-04d8-450a-9d2c-062ae9afa159" message="cache ends-------" />
+		</ee:cache>
+		<logger level="INFO" doc:name="Logger" doc:id="6c8d282f-c77a-4b2f-8fc2-08aea6fb1b5e" message="output---------------#[payload]" />
+	</flow>
+</mule>
