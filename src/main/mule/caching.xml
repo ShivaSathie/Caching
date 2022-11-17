@@ -15,7 +15,6 @@ http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/cu
 	<flow name="cachingFlow" doc:id="4293a6f2-6e3b-4128-bb6b-05295f245859" >
 		<http:listener doc:name="Listener" doc:id="a826d9b5-7081-4aff-8d0c-1eaabc5652b6" config-ref="HTTP_Listener_config" path="/Cache"/>
 		<set-payload value="#[attributes.queryParams.accountID]" doc:name="Set Payload" doc:id="e992d4e8-de85-4cb6-8e08-d8246487f43e" />
-		<logger level="INFO" doc:name="Logger" doc:id="d46a03e5-d427-4237-84de-918ca7e8f053" message="payload received----------#[payload]"/>
 		<ee:cache doc:name="Cache" doc:id="3db09645-e041-4194-a768-34fd4cb3a9ba" cachingStrategy-ref="Caching_Strategy">
 			<logger level="INFO" doc:name="Logger" doc:id="8f0c7674-e699-40e0-894f-e09d50f5d134" message="cache starts-------------" />
 			<ee:transform doc:name="Transform Message" doc:id="0132122d-dd5c-404a-aa73-f64d970ad50d" >
